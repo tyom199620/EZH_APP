@@ -1,0 +1,38 @@
+{
+  "expo": {
+    "name": "EZH",
+    "slug": "EZH-APP",
+    "version": "11.0.0",
+    "orientation": "portrait",
+    "icon": "./assets/icon2.png",
+    "splash": {
+      "image": "./assets/img/preload.png",
+      "resizeMode": "contain",
+      "backgroundColor": "#ffffff"
+    },
+    "updates": {
+      "fallbackToCacheTimeout": 0
+    },
+    "assetBundlePatterns": [
+      "**/*"
+    ],
+    "ios": {
+      "supportsTablet": true,
+      "bundleIdentifier": "com.JustCode.EZH",
+      "buildNumber": "11.0.0"
+    },
+    "android": {
+      "adaptiveIcon": {
+        "foregroundImage": "./assets/icon2.png",
+        "backgroundColor": "#FFFFFF"
+      },
+      "permissions": [],
+      "package": "com.JustCode.EZH",
+      "versionCode": 11
+    },
+    "web": {
+      "favicon": "./assets/favicon.png"
+    },
+    "description": ""
+  }
+}
