@@ -40,8 +40,8 @@ export default class App extends Component {
     constructor(props) {
         super(props);
         this.state = {
-            tab_panel1_yesterday: true,
-            tab_panel1_today: false,
+            tab_panel1_yesterday: false,
+            tab_panel1_today: true,
             tab_panel1_week: false,
             tab_panel1_month: false,
             tab_panel1_all_time: false,
@@ -52,9 +52,9 @@ export default class App extends Component {
             shop_list: [],
 
             todayDate: moment().format('DD.MM.YYYY').toString(),
-            weekFirstDayDate: moment().startOf('week').format('DD.MM.YYYY'),
+            weekFirstDayDate: moment().subtract(1,'week').format('DD.MM.YYYY'),
             weekLastDayDate: moment().format('DD.MM.YYYY'),
-            monthFirstDay: moment().startOf('month').format('DD.MM.YYYY'),
+            monthFirstDay: moment().subtract(1,'month').format('DD.MM.YYYY'),
             monthYesterday: moment().subtract(1, 'days').format('DD.MM.YYYY'),
         }
     }
@@ -99,7 +99,7 @@ export default class App extends Component {
 
                     };
 
-
+                    console.log(response.data.date_start, 'statistic')
                     this.setState({
                         statistic_data: statistic_data
                     })
@@ -238,6 +238,18 @@ export default class App extends Component {
 
                 <View style={styles.timeButtons}>
                     <TouchableOpacity
+                        style={this.state.tab_panel1_today === true ? {...styles.timeButton, ...styles.timeButtonActive} : {...styles.timeButton}}
+                        onPress={() => {
+                            this.openTabPanel1(false, true, false, false, false);
+                        }}>
+
+                        <Text style={this.state.tab_panel1_today === true ? {
+                            color: 'white',
+                            fontSize: 11
+                        } : {color: 'black', fontSize: 11}}>Сегодня</Text>
+                    </TouchableOpacity>
+
+                    <TouchableOpacity
                         style={this.state.tab_panel1_yesterday === true ? {...styles.timeButton, ...styles.timeButtonActive} : {...styles.timeButton}}
                         onPress={() => {
                             this.openTabPanel1(true, false, false, false, false);
@@ -249,17 +261,6 @@ export default class App extends Component {
                         } : {color: 'black', fontSize: 11}}>Вчера</Text>
                     </TouchableOpacity>
 
-                    <TouchableOpacity
-                        style={this.state.tab_panel1_today === true ? {...styles.timeButton, ...styles.timeButtonActive} : {...styles.timeButton}}
-                        onPress={() => {
-                            this.openTabPanel1(false, true, false, false, false);
-                        }}>
-
-                        <Text style={this.state.tab_panel1_today === true ? {
-                            color: 'white',
-                            fontSize: 11
-                        } : {color: 'black', fontSize: 11}}>Сегодня</Text>
-                    </TouchableOpacity>
 
                     <TouchableOpacity
                         style={this.state.tab_panel1_week === true ? {...styles.timeButton, ...styles.timeButtonActive} : {...styles.timeButton}}

@@ -44,7 +44,6 @@ export default class App extends Component {
             user_email: null,
             refreshing: false,
             shop_id: null,
-            randomNumber: null,
 
             shop_list: [''],
 
@@ -52,7 +51,9 @@ export default class App extends Component {
             sortOfDate: 'yesterday',
             loading: true,
 
-            isDemo: ''
+            isDemo: '',
+
+            right: 20
         };
     }
 
@@ -61,12 +62,20 @@ export default class App extends Component {
         this.setState({shop_id: shop_id})
     }
 
+    handleRefreshModal = () => {
+        this.setState({
+            right: -2000
+        })
+    }
+
     _onRefresh = () => {
-        let randomNumber = Math.floor(Math.random() * 100) + 1;
+        this.setShopList();
+        this.setTariffInfo();
 
-        this.setState({refreshing: true});
+        console.log(this.state.shop_id, '11111')
 
-        this.setState({randomNumber: randomNumber});
+        this.setState({refreshing: true, right: 20});
+
         let _this = this;
         setTimeout(function () {
 
@@ -98,6 +107,7 @@ export default class App extends Component {
 
                     let shops = response.data;
                     let shop_list = [];
+
 
                     for (let i = 0; i < shops.length; i++) {
                         shop_list.push({
@@ -147,29 +157,29 @@ export default class App extends Component {
 
     // tarifi stugum
 
-    setTariff = async () => {
-        try {
-            let userToken = await AsyncStorage.getItem('userToken');
-            let AuthStr = 'Bearer ' + userToken;
-            fetch(`https://lk.e-zh.ru/api/user/tariff`, {
-                    method: "POST",
-                    headers: {'Authorization': AuthStr},
-                }
-            )
-                .then((response) => {
-                    return response.json()
-                })
-                .then((response) => {
-                    this.setState({
-                        tariffInfo: response
-
-                    })
-                    console.log(this.state.tariffInfoчё)
-                })
-        } catch (e) {
-            console.log("ERROR")
-        }
-    }
+    // setTariff = async () => {
+    //     try {
+    //         let userToken = await AsyncStorage.getItem('userToken');
+    //         let AuthStr = 'Bearer ' + userToken;
+    //         fetch(`https://lk.e-zh.ru/api/user/tariff`, {
+    //                 method: "POST",
+    //                 headers: {'Authorization': AuthStr},
+    //             }
+    //         )
+    //             .then((response) => {
+    //                 return response.json()
+    //             })
+    //             .then((response) => {
+    //                 this.setState({
+    //                     tariffInfo: response
+    //
+    //                 })
+    //                 //  console.log(this.state.tariffInfo, ' TARIF INFO')
+    //             })
+    //     } catch (e) {
+    //         console.log("ERROR")
+    //     }
+    // }
 
     setTariffInfo = async () => {
         let userToken = await AsyncStorage.getItem('userToken');
@@ -179,13 +189,14 @@ export default class App extends Component {
 
                 method: 'POST',
                 headers: {'Authorization': AuthStr}
-            }).then((response)=>{
+            }).then((response) => {
                 return response.json()
             })
-                .then((response)=>{
+                .then((response) => {
                     this.setState({
                         isDemo: response
                     })
+                    console.log(response, ' TARIF ACTIVE')
                 })
         } catch (e) {
             //////
@@ -196,8 +207,14 @@ export default class App extends Component {
     componentDidMount() {
         this.setAuthUserInfo().then(r => console.log());
         this.setShopList().then(r => console.log());
-        this.setTariff().then(r => console.log());
         this.setTariffInfo().then(r => console.log())
+
+        this.focusListener = this.props.navigation.addListener("focus", () => {
+            this.setState({
+                loading: true
+            })
+            this.setTariffInfo().then(r => console.log())
+        });
     }
 
     static contextType = AuthContext
@@ -207,8 +224,8 @@ export default class App extends Component {
         AsyncStorage.removeItem('userToken');
     }
 
-
     render() {
+        console.log(this.state.refreshing)
         return (
             <View style={styles.container}>
 
@@ -218,10 +235,11 @@ export default class App extends Component {
                 />
 
 
-                {this.state.shop_list.length === 0 && <ConnectShopMessage/>}
+                {this.state.shop_list.length === 0 &&
+                    <ConnectShopMessage onRefresh={this._onRefresh} closeModal={this.handleRefreshModal} right={this.state.right}/>}
 
                 {this.state.shop_list.length !== 0 && this.state.isDemo === true ?
-                    <ChooseTareefMessage/> : null}
+                    <ChooseTareefMessage onRefresh={this._onRefresh} closeModal={this.handleRefreshModal} right={this.state.right}/> : null}
 
 
                 <ScrollView nestedScrollEnabled={true} style={styles.mainBodyWrapper} ref={(e) => {
@@ -234,21 +252,18 @@ export default class App extends Component {
                 }>
                     <StatisticsCardsComponent
                         refresh={this.state.refreshing}
-                        randomNumber={this.state.randomNumber}
                         changeShopId={this.handleChangeShopId.bind(this)}
                         onDateChange={this.changeSortOfDate}
                     />
                     {this.state.shop_list.length !== 0 && <View>
                         <ChartComponent
                             refresh={this.state.refreshing}
-                            randomNumber={this.state.randomNumber}
                             shop_id={this.state.shop_id}
                             changeShopId={this.handleChangeShopId.bind(this)}
                         />
                         <OrderListComponent
                             fscroll={this.fScroll}
                             refresh={this.state.refreshing}
-                            randomNumber={this.state.randomNumber}
                             navigationProps={this.props.navigation}
                             sortData={this.state.sortOfDate}
                             shop_id={this.state.shop_id}

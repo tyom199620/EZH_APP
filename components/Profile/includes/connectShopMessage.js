@@ -19,7 +19,6 @@ export default class App extends Component {
     constructor(props) {
         super(props);
         this.state = {
-            modalVisibility: true,
             right: 20,
 
         }
@@ -29,16 +28,12 @@ export default class App extends Component {
         Linking.openURL('https://lk.e-zh.ru/shops/welcome').then();
     };
 
-    handleCloseModal = () => {
-        this.setState({right: -2000})
-        console.log(111);
-    }
 
     render() {
 
         return (
 
-            <View style={[styles.alertMessageStyle, {right: this.state.right,}]}>
+            <View style={[styles.alertMessageStyle, {right: this.props.right,}]}>
                 <View style={{flexDirection: 'row', padding: 5}}>
                     <View style={{padding: 10, marginTop: 5}}>
                         <Svg
@@ -63,7 +58,7 @@ export default class App extends Component {
                             Для продолжения работы необходимо {'\n'}подключить магазин
                         </Text>
                     </View>
-                    <TouchableOpacity onPress={this.handleCloseModal} style={{marginLeft: 18, width: 50, height: 30}}>
+                    <TouchableOpacity onPress={this.props.closeModal} style={{marginLeft: 18, width: 50, height: 30}}>
                         <Text style={{color: '#FAFAFA', fontSize: 12,}}>
                             X
                         </Text>

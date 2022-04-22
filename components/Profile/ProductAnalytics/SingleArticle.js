@@ -17,11 +17,11 @@ import {
     ImageBackground,
     PanResponder,
     BackHandler,
+
     ActivityIndicator, Pressable
 } from 'react-native';
 import Svg, {Path, Defs, G, ClipPath, Circle} from "react-native-svg"
 import SvgUri from 'react-native-svg-uri';
-
 
 import HeaderComponent from '../includes/header';
 import axios from "axios";
@@ -31,7 +31,9 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 import * as Linking from "expo-linking";
 import moment from "moment";
 
+
 export default class SingleArticle extends Component {
+
     constructor(props) {
         super(props);
         this.state = {
@@ -42,10 +44,11 @@ export default class SingleArticle extends Component {
             loading: true,
 
             todayDate: moment().format('DD.MM.YYYY').toString(),
-            weekFirstDayDate: moment().startOf('week').format('DD.MM.YYYY'),
+            weekFirstDayDate: moment().subtract(1,'week').format('DD.MM.YYYY'),
             weekLastDayDate: moment().format('DD.MM.YYYY'),
-            monthFirstDay: moment().startOf('month').format('DD.MM.YYYY'),
+            monthFirstDay: moment().subtract(1,'month').format('DD.MM.YYYY'),
             monthYesterday: moment().subtract(1, 'days').format('DD.MM.YYYY'),
+
             date_start: {}
         }
     }
@@ -55,22 +58,21 @@ export default class SingleArticle extends Component {
             let userToken = await AsyncStorage.getItem('userToken');
             let AuthStr = 'Bearer ' + userToken;
 
-            axios.get(`https://lk.e-zh.ru/api/dashboard/stats`, {
+            axios.get(`https://lk.e-zh.ru/api/dashboard/stats?&date=all`, {
                 headers: {'Authorization': AuthStr},
                 "content-type": "application/json",
             }).then((response) => {
                 let statistic_data = {
                     "date_start": (response.data.date_start),
                 }
+                console.log(response.data.date_start, 'user_create_date');
                 this.setState({
                     date_start: statistic_data
                 })
-                console.log(this.state.date_start, 'setStartDate');
             })
         } catch (e) {
             console.log('error' + e)
         }
-
     }
 
 
@@ -88,19 +90,17 @@ export default class SingleArticle extends Component {
         if (this.props.article.shop_id !== prevProps.article.shop_id || this.props.url_date !== prevProps.url_date) {
             this.setArticleDate();
         }
-        if (this.props.article !== prevProps.article){
+        if (this.props.article !== prevProps.article) {
             this.setArticleDate()
         }
-
     }
 
-
     setArticleDate = async () => {
-        try {
-            let userToken = await AsyncStorage.getItem('userToken');
-            let AuthStr = 'Bearer ' + userToken;
+        let userToken = await AsyncStorage.getItem('userToken');
+        let AuthStr = 'Bearer ' + userToken;
 
-            let url_date = this.props.url_date
+        let url_date = this.props.url_date
+        try {
 
             axios.get(`https://lk.e-zh.ru/api/dashboard/stats?date=${url_date}&search=${this.props.article.article}&shop_id=${this.props.article.shop_id}&size=null`, {
 
@@ -125,10 +125,11 @@ export default class SingleArticle extends Component {
             let userToken = await AsyncStorage.getItem('userToken');
             let AuthStr = 'Bearer ' + userToken;
 
-
             let shop_id = this.props.article.shop_id;
-            let url_date = '1+month';
+            let url_date = this.props.url_date;
             let article = this.props.article.article;
+
+            console.log({shop_id, url_date, article})
 
             axios.get('https://lk.e-zh.ru/api/goods/?article=' + article + '&date=' + url_date + '&shop_id=' + shop_id, {
 
@@ -163,28 +164,15 @@ export default class SingleArticle extends Component {
     }
 
 
-    backAction = () => {
-        this.setState({
-            loading: true
-        })
-        this.setArticleDate().then(r => console.log())
-        this.props.navigation.navigate("ProductAnalytics")
-        return true;
-    };
-
     componentDidMount() {
         this.handleLoading()
 
-        this.backHandler = BackHandler.addEventListener(
-            "hardwareBackPress",
-            this.backAction
-        );
+
         this.focusListener = this.props.navigation.addListener("focus", () => {
             this.setState({
                 loading: true
             })
             this.setArticleDate2()
-
         });
         this.setArticleDate().then(r => console.log());
         this.setStartDate()
@@ -192,7 +180,6 @@ export default class SingleArticle extends Component {
 
 
     componentWillUnmount() {
-        //  this.backHandler.remove();
         this.focusListener();
     }
 
@@ -601,13 +588,13 @@ export default class SingleArticle extends Component {
 
                                 }]}>
                                     Данные за период
-                                    {this.props.url_date === 1 && <Text style={{
+                                    {this.props.url_date == 1 && <Text style={{
                                         fontSize: 12,
                                         color: 'white',
                                         marginLeft: 5
                                     }}> c {this.state.todayDate} по {this.state.todayDate}</Text>}
 
-                                    {this.props.url_date === 7 && <Text style={{
+                                    {this.props.url_date == 7 && <Text style={{
                                         fontSize: 12,
                                         color: 'white',
                                         marginLeft: 5
@@ -624,6 +611,12 @@ export default class SingleArticle extends Component {
                                         color: 'white',
                                         marginLeft: 5
                                     }}>с {this.state.date_start.date_start} по {this.state.todayDate}</Text> : null}
+                                    {this.props.url_date === 'yesterday' ? <Text style={{
+                                        fontSize: 12,
+                                        color: 'white',
+                                        marginLeft: 5
+                                    }}>с {this.state.monthYesterday} по {this.state.todayDate}</Text> : null}
+
                                 </Text>
 
                             </View>
@@ -632,7 +625,9 @@ export default class SingleArticle extends Component {
                                 <Text style={{
                                     fontWeight: 'bold', width: '45%'
                                 }}>{parseInt(this.state.articleList.income_orders)} ₽
-                                    / {this.props.article.PeriodOrders ? <Text>{this.props.article.PeriodOrders}</Text> : <Text>{this.state.articleData.PeriodOrders}</Text>} шт </Text>
+                                    / {this.props.article.PeriodOrders ?
+                                        <Text>{this.props.article.PeriodOrders}</Text> :
+                                        <Text>{this.state.articleData.PeriodOrders}</Text>} шт </Text>
 
                                 <View style={{width: '20%', flexDirection: 'row'}}>
                                     {/*<Text style={{width: '20%', marginRight: 5, marginTop: 5}}>*/}

@@ -34,7 +34,7 @@ export default class App extends Component {
             user_buy_tareef: false,
             tariffInfo: [],
             buttunActive: false,
-            isDemo: ''
+            isDemo: {}
         };
     }
 
@@ -43,7 +43,6 @@ export default class App extends Component {
         try {
             let userToken = await AsyncStorage.getItem('userToken');
             let AuthStr = 'Bearer ' + userToken;
-
 
             this.setState({loading: true})
 
@@ -54,6 +53,7 @@ export default class App extends Component {
                 (response) => {
                     this.setState({loading: false})
                     let orders = response.data.data;
+
 
                     for (let i = 0; i < orders.length; i++) {
                         var order_price = (orders[i].totalPrice * (100 - orders[i].discountPercent) / 100).toFixed(2);
@@ -81,33 +81,36 @@ export default class App extends Component {
         let userToken = await AsyncStorage.getItem('userToken');
         let AuthStr = 'Bearer ' + userToken;
         try {
+            this.setState({loading: true})
+
             fetch(`https://lk.e-zh.ru/api/user/is_demo`, {
                 method: 'POST',
                 headers: {'Authorization': AuthStr}
-            }).then((response)=>{
+            }).then((response) => {
                 return response.json()
             })
-                .then((response)=>{
+                .then((response) => {
                     this.setState({
-                        isDemo: response
+                        isDemo: response,
+                        loading: false
                     })
+              //      console.log(response, 'asd')
                 })
-        }catch (e) {
+        } catch (e) {
             console.log('error' + e)
         }
     }
 
 
-
-    handleProducts = (article) => {
-
-        this.props.navigationProps.navigate('ProductList', {
-            params: article,
-        })
-    }
-
     getOrdersList = () => {
         return this.state.orders;
+    }
+
+    handleProducts = (article) => {
+        this.props.navigationProps.navigate('ProductList', {
+            params: article,
+            url_date: this.props.sortData //important
+        })
     }
 
     orderedDate = (date) => {
@@ -116,8 +119,8 @@ export default class App extends Component {
     }
 
     componentDidMount() {
-        this.setOrdersList();
         this.setTariffInfo()
+        this.setOrdersList();
     }
 
     componentDidUpdate(prevProps) {
@@ -128,14 +131,13 @@ export default class App extends Component {
         if (this.props.sortData !== prevProps.sortData) {
             this.setOrdersList();
         }
-        if (this.props.shop_id !== prevProps.shop_id){
+        if (this.props.shop_id !== prevProps.shop_id) {
             this.setOrdersList();
         }
 
     }
 
     render() {
-        console.log(this.props.shop_id)
         return (
             <View>
                 <View style={order_list_styles.orderListWrapper}>

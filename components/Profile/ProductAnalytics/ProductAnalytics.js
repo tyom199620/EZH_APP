@@ -90,35 +90,40 @@ export default class App extends React.PureComponent {
             secondLabel: null,
 
 
-            typeSort: 'Остаткам',
-            upAndDownSort: 'Убыванию',
+            //  typeSort: 'Остаткам',
+            //  upAndDownSort: 'Убыванию',
+
+            typeSortValue: 'StockCount',
+            upAndDownSortValue: 'desc',
 
             firstDropDown: [
-                {label: 'Остаткам', value: 'Остаткам'},
-                {label: 'Заказам', value: 'Заказам'},
-                {label: 'Рекомендациям', value: 'Рекомендациям'},
+                {label: 'Остаткам', value: 'StockCount'},
+                {label: 'Заказам', value: 'PeriodOrders'},
+                {label: 'Рекомендациям', value: 'PredictStock'},
             ],
             secondDropDown: [
-                {label: 'Убыванию', value: 'Убыванию'},
-                {label: 'Возрастанию', value: 'Возрастанию'},
-            ]
-
-
+                {label: 'Убыванию', value: 'desc'},
+                {label: 'Возрастанию', value: 'asc'},
+            ],
         };
     }
 
     leftDropdownChange = async (item) => {
         await this.setState({
-            typeSort: item.label
+            //  typeSort: item.label,
+            typeSortValue: item.value,
         })
-        this.sortedByFilters()
+        //  console.log(this.state.typeSortValue)
+        await this.setProductAnalyticList()
     }
 
     rightDropdownChange = async (item) => {
         await this.setState({
-            upAndDownSort: item.label
+            //   upAndDownSort: item.label,
+            upAndDownSortValue: item.value
         })
-        this.sortedByFilters()
+        //  console.log(this.state.upAndDownSortValue)
+        await this.setProductAnalyticList()
     }
 
 
@@ -179,6 +184,7 @@ export default class App extends React.PureComponent {
         }
     }
 
+
     setProductAnalyticList = async () => {
 
         try {
@@ -190,19 +196,19 @@ export default class App extends React.PureComponent {
                 url_date,
                 shop_id,
                 url_page,
-                per_page,
                 last_page,
                 typeSort,
                 upAndDownSort,
-                products
-
+                products,
+                typeSortValue,
+                upAndDownSortValue
             } = this.state
 
 
             // console.log('https://lk.e-zh.ru/api/goods/?size=null&article=null&date=' + url_date + '&per_page=20' + '&page=' + url_page,)
 
 
-            axios.get('https://lk.e-zh.ru/api/goods/?size=null&article=null&date=' + url_date + '&shop_id=' + shop_id + '&per_page=20' + '&page=' + url_page, {
+            axios.get('https://lk.e-zh.ru/api/goods/?size=null&article=null&date=' + url_date + '&shop_id=' + shop_id + '&per_page=20' + '&page=' + url_page + `&order=${typeSortValue}` + `&order_direction=${upAndDownSortValue}`, {
 
                 headers: {'Authorization': AuthStr},
                 "content-type": "application/json",
@@ -237,7 +243,7 @@ export default class App extends React.PureComponent {
                     //   console.log('err.response', err.response)
                 },
             );
-            this.sortedByFilters()
+            //    this.sortedByFilters()
 
         } catch (e) {
             console.log('error' + e)
@@ -312,8 +318,8 @@ export default class App extends React.PureComponent {
     }
 
     componentDidMount() {
-        this.setProductAnalyticList().then(r => console.log());
         this.setShopList().then(r => console.log());
+        this.setProductAnalyticList().then(r => console.log());
     }
 
     getOrdersList = () => {
@@ -367,11 +373,10 @@ export default class App extends React.PureComponent {
         this.setProductAnalyticList().then(r => console.log("OK"))
 
         if (today_sort === true) {
-            this.setProductAnalyticList().then(r => console.log())
             this.setState({
                 url_date: 1
             })
-            this.sortedByFilters().then(r => console.log())
+            this.setProductAnalyticList().then(r => console.log())
 
             console.log('today_sort == open')
         } else if (a_week_sort === true) {
@@ -382,23 +387,21 @@ export default class App extends React.PureComponent {
             })
             console.log('a_week_sort == open')
         } else if (a_month_sort === true) {
-            this.setProductAnalyticList().then(r => console.log())
 
             this.setState({
                 url_date: '1+month'
             })
-            this.sortedByFilters().then(r => console.log())
+            this.setProductAnalyticList().then(r => console.log())
 
             console.log('a_month_sort == open')
 
         } else if (all_the_time === true) {
             this.setProductAnalyticList().then(r => console.log())
-
             this.setState({
                 url_date: 'all'
             })
+
         }
-        this.sortedByFilters()
     };
     handleProducts = (article) => {
         let {analyticItemSmallModalVisible} = this.state;
@@ -455,6 +458,7 @@ export default class App extends React.PureComponent {
     onCardsRendering = ({item}) => {
 
         return (
+
             <View style={analyticStyle.analyticItemWrapper}>
                 <View style={analyticStyle.analyticItemTop}>
 
@@ -754,7 +758,7 @@ export default class App extends React.PureComponent {
         this.setState({
             url_page: url_page + 1,
         })
-        this.sortedByFilters()
+        this.setProductAnalyticList()
     }
 
     handleBackPage = () => {
@@ -791,6 +795,7 @@ export default class App extends React.PureComponent {
                     navigation={this.props.navigation}
                 />
                 <Text style={styles.mainBodyTitle}>Товарная аналитика</Text>
+
                 <View style={analyticStyle.analyticActionsWrapper}>
 
                     <View horizontal={true} style={analyticStyle.analyticActionsBody}>
@@ -896,12 +901,12 @@ export default class App extends React.PureComponent {
                                 width: '100%',
                                 fontSize: 12
                             }}
-                            defaultValue={'Остаткам'}
+                            defaultValue={this.state.typeSortValue}
                             itemStyle={{
                                 justifyContent: 'flex-start',
                                 height: 35,
                             }}
-                            dropDownStyle={{backgroundColor: '#fff', }}
+                            dropDownStyle={{backgroundColor: '#fff',}}
                             onChangeItem={item => this.leftDropdownChange(item)}
 
                         />
@@ -915,7 +920,7 @@ export default class App extends React.PureComponent {
                                 backgroundColor: '#fff',
                                 width: '100%',
                             }}
-                            defaultValue={'Убыванию'}
+                            defaultValue={this.state.upAndDownSortValue}
                             labelStyle={{
                                 color: '#4C4C66',
                                 width: '100%',

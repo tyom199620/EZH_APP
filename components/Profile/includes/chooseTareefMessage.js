@@ -19,7 +19,6 @@ export default class App extends Component {
     constructor(props) {
         super(props);
         this.state = {
-            modalVisibility: true,
             right: 20
         }
     }
@@ -28,15 +27,10 @@ export default class App extends Component {
     _handleOpenWithLinking = () => {
         Linking.openURL('https://lk.e-zh.ru/tariff').then();
     };
-    handleCloseModal = () => {
-        this.setState({right: -2000})
-        console.log(111);
-    }
 
     render() {
-
         return (
-            <View style={[styles.alertMessageStyle, {right: this.state.right,}]}>
+            <View style={[styles.alertMessageStyle, {right: this.props.right,}]}>
                 <View style={{flexDirection: 'row', padding: 5}}>
                     <View style={{padding: 10,  marginTop: 5}}>
                         <Svg
@@ -57,7 +51,7 @@ export default class App extends Component {
                             Выберите тариф для использования всех{'\n'}функций приложения
                         </Text>
                     </View>
-                    <TouchableOpacity onPress={this.handleCloseModal} style={{marginLeft: 12, width: 30, height: 30}}>
+                    <TouchableOpacity onPress={this.props.closeModal} style={{marginLeft: 12, width: 30, height: 30}}>
                         <Text style={{color: '#FAFAFA', fontSize: 10,}}>
                             X
                         </Text>

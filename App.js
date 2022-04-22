@@ -23,11 +23,12 @@ import ConfirmEmailComponent from "./components/Auth/ConfirmEmailCode"
 import OrderListComponent from "./components/Profile/includes/orderList"
 
 import {LinearGradient} from 'expo-linear-gradient';
-
-
 import {AuthContext} from './components/AuthContext/context';
+
 // import AsyncStorage from '@react-native-community/async-storage';
-import AsyncStorage from '@react-native-async-storage/async-storage'
+import AsyncStorage from '@react-native-async-storage/async-storage';
+
+import { StackActions } from '@react-navigation/native';
 
 
 import axios from 'axios';
@@ -72,8 +73,7 @@ function DashboardScreen({navigation}) {
 }
 
 function ProductScreen({route, navigation}) {
-    const {params} = route.params;
-    const {url_date} = route.params;
+    const {params, url_date} = route.params;
     return (
         <SingleArticle url_date={url_date} article={params} navigation={navigation}/>
     )
@@ -99,6 +99,7 @@ const tabBarStyle = {
 
 
 export default function App() {
+    const popAction = StackActions.pop(1);
 
     const [isLoading, setIsLoading] = React.useState(true);
     const [userToken, setUserToken] = React.useState(null);
@@ -150,7 +151,7 @@ export default function App() {
             const userEmail = foundUser.email;
             // setUserToken(userToken);
 
-            console.log('AuthUser', foundUser);
+          //  console.log('AuthUser', foundUser);
 
             try {
                 await AsyncStorage.setItem('userToken', userToken);

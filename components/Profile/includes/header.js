@@ -38,6 +38,7 @@ export default class App extends Component {
             user_email: null,
             shop_list: [],
             buttonActive: false,
+            isDemo: {}
         };
 
     }
@@ -112,7 +113,7 @@ export default class App extends Component {
     componentDidMount() {
         this.setAuthUserInfo().then(r => console.log());
         this.setShopList().then(r => console.log());
-        this.setTariff().then(r => console.log());
+        this.setTariffInfo()
     }
 
     signOut = () => {
@@ -140,38 +141,28 @@ export default class App extends Component {
         });
         this.props.navigation.navigate('Dashboard')
     }
-
-    setTariff = async () => {
+    setTariffInfo = async () => {
+        let userToken = await AsyncStorage.getItem('userToken');
+        let AuthStr = 'Bearer ' + userToken;
         try {
-            let userToken = await AsyncStorage.getItem('userToken');
-            let AuthStr = 'Bearer ' + userToken;
-            console.log()
-            fetch(`https://lk.e-zh.ru/api/user/tariff`, {
-                    method: "POST",
-                    headers: {'Authorization': AuthStr},
-                }
-            )
-                .then((response) => {
-                    return response.json()
-                })
+            fetch(`https://lk.e-zh.ru/api/user/is_demo`, {
+
+                method: 'POST',
+                headers: {'Authorization': AuthStr}
+            }).then((response) => {
+                return response.json()
+            })
                 .then((response) => {
                     this.setState({
-                        tariffInfo: response
+                        isDemo: response
                     })
-                    if (response.audit_count === 0) {
-                        this.setState({
-                            buttonActive: true
-                        })
-                    } else {
-                        this.setState({
-                            buttonActive: false
-                        })
-                    }
+                    console.log(response, ' TARIF ACTIVE')
                 })
         } catch (e) {
-            console.log("ERROR")
+            //////
         }
     }
+
 
     render() {
 
@@ -215,7 +206,8 @@ export default class App extends Component {
 
                             <View style={{width: '100%', backgroundColor: '#fafafa', flex: 1}}>
 
-                                <TouchableOpacity style={{
+                                <TouchableOpacity
+                                    style={{
                                     width: '100%',
                                     backgroundColor: 'white',
                                     paddingHorizontal: 23,
@@ -229,8 +221,8 @@ export default class App extends Component {
                                 </TouchableOpacity>
 
 
-                                {this.state.shop_list.length === 0 || this.state.buttonActive === true ?
-                                    <TouchableOpacity disabled={true} style={{
+                                {this.state.shop_list.length === 0 || this.state.isDemo === true ?
+                                    <TouchableOpacity disabled={this.state.isDemo} style={{
                                         width: '100%',
                                         backgroundColor: 'white',
                                         paddingHorizontal: 23,
@@ -261,15 +253,7 @@ export default class App extends Component {
 
                             </View>
 
-                            <View style={{
-                                width: "100%",
-                                height: 60,
-                                backgroundColor: 'white',
-                                flexDirection: 'row',
-                                justifyContent: 'flex-start',
-                                alignItems: 'center',
-                                paddingHorizontal: 23
-                            }}>
+                            <View style={styles.headerButtonStyle}>
                                 <TouchableOpacity
                                     onPress={() => {
                                         this.signOut()
@@ -582,5 +566,14 @@ const styles = StyleSheet.create({
         color: 'white',
     },
     timeButtonText: {},
-    blueBackground: {}
+    blueBackground: {},
+    headerButtonStyle:{
+        width: "100%",
+        height: 60,
+        backgroundColor: 'white',
+        flexDirection: 'row',
+        justifyContent: 'flex-start',
+        alignItems: 'center',
+        paddingHorizontal: 23
+    }
 });
