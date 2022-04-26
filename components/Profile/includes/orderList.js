@@ -34,7 +34,7 @@ export default class App extends Component {
             user_buy_tareef: false,
             tariffInfo: [],
             buttunActive: false,
-            isDemo: {}
+            isDemo: this.props.isDemo
         };
     }
 
@@ -192,7 +192,7 @@ export default class App extends Component {
                                 key={article.id}
                                 style={order_list_styles.orderListItemWrapper}
                                 onPress={() => this.handleProducts(article)}
-                                disabled={this.state.isDemo}
+                                disabled={this.props.isDemo}
                             >
 
                                 <View style={order_list_styles.orderListItemRight}>

@@ -45,7 +45,7 @@ export default class App extends Component {
             tab_panel1_week: false,
             tab_panel1_month: false,
             tab_panel1_all_time: false,
-            stat_order: 'yesterday',
+            stat_order: 1,
             statistic_data: {},
             shop_id: null,
             loading: false,
@@ -959,8 +959,6 @@ export default class App extends Component {
                                         }} source={require('../../../assets/img/greenshadow.png')}/>
 
                                     </View>
-
-
                             }
 
                         </View>
@@ -986,8 +984,6 @@ export default class App extends Component {
                         </View>
                     )}
                 />
-
-
             </View>
         );
     }

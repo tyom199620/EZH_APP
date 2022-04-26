@@ -105,6 +105,7 @@ export default class App extends React.PureComponent {
                 {label: 'Убыванию', value: 'desc'},
                 {label: 'Возрастанию', value: 'asc'},
             ],
+            viewBottomMargin: 20
         };
     }
 
@@ -222,7 +223,7 @@ export default class App extends React.PureComponent {
 
                     this.setState({loading: false})
                     let products = response.data.data;
-
+                  //  console.log(products)
                     if (!shop_id) {
                         this.setState({
                             filteredProducts: products,
@@ -311,10 +312,16 @@ export default class App extends React.PureComponent {
 
         this.setState({randomNumber: randomNumber});
         let _this = this;
-        setTimeout(function () {
-            _this.setState({refreshing: false});
-        }, 1000)
+
         this.setProductAnalyticList()
+
+        setTimeout(function () {
+
+            //  alert("Refreshed")
+            // _this.setState({refreshing: false});
+            _this.setState({refreshing: false});
+
+        }, 10)
     }
 
     componentDidMount() {
@@ -536,8 +543,10 @@ export default class App extends React.PureComponent {
 
                             <View style={analyticStyle.analyticItemTopRightInfoArticleWrapper}>
                                 <Text
-                                    style={analyticStyle.analyticItemTopRightInfoArticle}>Артикул:</Text><Text
-                                style={analyticStyle.analyticItemTopRightInfoArticle}> {item.article} {item.ShopName}</Text>
+                                    style={analyticStyle.analyticItemTopRightInfoArticle}>Артикул:</Text>
+                                <Text style={[analyticStyle.analyticItemTopRightInfoArticle, {width: 70}]} numberOfLines={1}>
+                                    {item.article} {item.ShopName}
+                                </Text>
 
                                 <TouchableOpacity style={{marginLeft: 9}} onPress={() => {
                                     item.type == 'ozon_FBO' ? Linking.openURL('https://www.ozon.ru/product/' + item.MissedNmid + '/') : Linking.openURL('https://www.wildberries.ru/catalog/' + item.MissedNmid + '/detail.aspx?targetUrl=ST')
@@ -788,21 +797,14 @@ export default class App extends React.PureComponent {
         this.listRef.getScrollResponder().scrollTo(0)
     }
 
-    render() {
+    flatListHeader = () => {
         return (
-            <View style={styles.container}>
-                <HeaderComponent
-                    navigation={this.props.navigation}
-                />
+            <View style={analyticStyle.analyticActionsWrapper}>
                 <Text style={styles.mainBodyTitle}>Товарная аналитика</Text>
-
-                <View style={analyticStyle.analyticActionsWrapper}>
-
-                    <View horizontal={true} style={analyticStyle.analyticActionsBody}>
-                        <SafeAreaView horizontal={true}>
-
+                <View style={{width: '100%',}}>
+                    <View style={analyticStyle.analyticActionsBody}>
+                        <SafeAreaView style={{marginBottom: 25}}>
                             <View style={styles.timeButtons}>
-
                                 <TouchableOpacity
                                     style={this.state.today_sort === true ? {...styles.timeButton, ...styles.timeButtonActive} : {...styles.timeButton}}
                                     onPress={() => {
@@ -853,11 +855,9 @@ export default class App extends React.PureComponent {
                         </SafeAreaView>
                     </View>
                 </View>
-                <View style={[{width: '90%', marginBottom: 20}, (Platform.OS === 'ios') ? {zIndex: 222} : {}]}>
-
+                <View style={[{width: '100%', marginBottom: 15}, (Platform.OS === 'ios') ? {zIndex: 30} : {}]}>
                     <DropDownPicker
                         items={this.state.shop_list}
-
                         containerStyle={{height: 45}}
                         style={{
                             backgroundColor: '#fff',
@@ -876,19 +876,23 @@ export default class App extends React.PureComponent {
                         }}
                         dropDownStyle={{backgroundColor: '#fff'}}
                         onChangeItem={item => this.changeShop(item)}
-
+                        onOpen={()=>this.setState({
+                            viewBottomMargin: 80
+                        })}
+                        onClose={()=>{this.setState({
+                            viewBottomMargin: 20
+                        })}}
                     />
-
                 </View>
-                <Text style={{alignSelf: 'flex-start', marginLeft: 25, marginBottom: 5}}>Сортировать по:</Text>
+                <Text style={{alignSelf: 'flex-start', marginBottom: 5}}>Сортировать по:</Text>
 
                 <View style={[{
-                    width: '90%',
-                    marginBottom: 20,
+                    width: '100%',
                     flexDirection: 'row',
-                    justifyContent: 'space-between'
+                    justifyContent: 'space-between',
+                    alignSelf: 'flex-start',
                 }, (Platform.OS === 'ios') ? {zIndex: 30} : {}]}>
-                    <View style={{width: '45%'}}>
+                    <View style={{width: '45%', marginBottom: this.state.viewBottomMargin}}>
                         <DropDownPicker
                             items={this.state.firstDropDown}
                             containerStyle={{height: 45,}}
@@ -899,7 +903,8 @@ export default class App extends React.PureComponent {
                             labelStyle={{
                                 color: '#4C4C66',
                                 width: '100%',
-                                fontSize: 12
+                                fontSize: 12,
+
                             }}
                             defaultValue={this.state.typeSortValue}
                             itemStyle={{
@@ -908,14 +913,19 @@ export default class App extends React.PureComponent {
                             }}
                             dropDownStyle={{backgroundColor: '#fff',}}
                             onChangeItem={item => this.leftDropdownChange(item)}
-
+                            onOpen={()=>this.setState({
+                                viewBottomMargin: 100
+                            })}
+                            onClose={()=>{this.setState({
+                                viewBottomMargin: 20
+                            })}}
                         />
                     </View>
-                    <View style={{width: '45%'}}>
+                    <View style={{width: '45%', marginBottom: this.state.viewBottomMargin}}>
                         <DropDownPicker
                             items={this.state.secondDropDown}
 
-                            containerStyle={{height: 45,}}
+                            containerStyle={{height: 45}}
                             style={{
                                 backgroundColor: '#fff',
                                 width: '100%',
@@ -932,33 +942,55 @@ export default class App extends React.PureComponent {
                             }}
                             dropDownStyle={{backgroundColor: '#fff'}}
                             onChangeItem={item => this.rightDropdownChange(item)}
+                            onOpen={()=>this.setState({
+                                viewBottomMargin: 70
+                            })}
+                            onClose={()=>{this.setState({
+                                viewBottomMargin: 20
+                            })}}
+
                         />
                     </View>
                 </View>
+            </View>
+        )
+    }
 
+    render() {
+        return (
+            <View style={styles.container}>
+                <HeaderComponent
+                    navigation={this.props.navigation}
+                />
                 {this.state.loading === true &&
-
                     <View style={{
                         width: '100%',
-                        height: '50%',
+                        height: '100%',
                         justifyContent: 'center',
                         alignItems: 'center',
                         zIndex: 120
                     }}>
                         <ActivityIndicator size="large" color="0078D2"/>
                     </View>
-
                 }
-
-                <SafeAreaView style={styles.mainBodyWrapper}>
-                    <View>
+                <SafeAreaView style={styles.mainBodyWrapper}  >
+                    <View style={{width: '100%', paddingHorizontal: 35}}>
                         <FlatList
+                            ListHeaderComponent={this.flatListHeader()}
+                            ListHeaderComponentStyle={{width: '100%'}}
                             refreshing={true}
                             data={this.state.filteredProducts}
                             renderItem={this.onCardsRendering}
                             scrollEnabled={true}
                             vertical={true}
                             extraData={this.state}
+                            maxToRenderPerBatch = {5}
+                            refreshControl={
+                                <RefreshControl
+                                    refreshing={this.state.refreshing}
+                                    onRefresh={this._onRefresh}
+                                />
+                            }
                         />
                     </View>
                 </SafeAreaView>
@@ -982,13 +1014,11 @@ export default class App extends React.PureComponent {
                                 страница
                             </Text>
                         </TouchableOpacity>}
-
-
                     {this.state.url_page === this.state.last_page ?
                         <TouchableOpacity
                             disabled={true}
                             style={[analyticStyle.changePageStyle, {borderColor: '#99bfde'}]}>
-                            <Text style={{fontSize: 12, color: '#0078D2',}}>
+                            <Text style={{fontSize: 12, color: '#99bfde',}}>
                                 Следующая страница
                             </Text>
                         </TouchableOpacity>
@@ -1002,8 +1032,6 @@ export default class App extends React.PureComponent {
                         </TouchableOpacity>}
                 </View>
             </View>
-
-
         );
     }
 }
@@ -1013,10 +1041,10 @@ const analyticStyle = StyleSheet.create({
 
     analyticActionsWrapper: {
         width: '100%',
-        paddingHorizontal: 24,
         backgroundColor: "#fafafa",
         borderRadius: 4,
-        paddingBottom: 20
+        paddingBottom: 20,
+        alignSelf: "flex-start"
     },
     changePageStyle: {
         padding: 5,
@@ -1028,7 +1056,7 @@ const analyticStyle = StyleSheet.create({
     },
     analyticActionsBody: {
         width: '100%',
-        height: 40,
+        height: 50,
         borderRadius: 4,
     },
 
@@ -1038,7 +1066,7 @@ const analyticStyle = StyleSheet.create({
         backgroundColor: 'white',
         borderRadius: 8,
         padding: 10,
-        marginBottom: 10
+        marginBottom: 10,
     },
 
     analyticItemTop: {
@@ -1119,6 +1147,7 @@ const analyticStyle = StyleSheet.create({
     analyticItemTopRightInfoArticle: {
         color: '#00395ccc',
         fontSize: 11,
+
     },
     analyticItemBottom: {},
     analyticItemBottomProgressItem: {
@@ -1331,30 +1360,29 @@ const styles = StyleSheet.create({
         color: "#00203399"
     },
     mainBodyWrapper: {
-        width: '100%',
-        padding: 24,
+        width: '110%',
         backgroundColor: "#fafafa",
         paddingBottom: 20,
-        flex: 1
+        flex: 1,
     },
     mainBodyTitle: {
         color: '#002033',
-        fontSize: 30,
+        fontSize: 29,
         fontWeight: 'bold',
-        paddingBottom: 30,
-        paddingLeft: 23,
         paddingTop: 13,
         textAlign: 'left',
         width: '100%',
         backgroundColor: "#fafafa",
+        alignSelf: 'flex-start',
+        marginBottom: 15
     },
     timeButtons: {
         width: '100%',
         flexDirection: 'row',
         justifyContent: 'space-between',
-        alignItems: 'center',
-        marginBottom: 20,
+        marginBottom: 25,
         height: '85%',
+        alignSelf: 'flex-start'
 
     },
     timeButton: {
@@ -1364,7 +1392,6 @@ const styles = StyleSheet.create({
         alignItems: 'center',
         borderRadius: 4,
         paddingHorizontal: 13,
-        paddingVertical: 7
     },
     timeButtonActive: {
         backgroundColor: "#0078D2",

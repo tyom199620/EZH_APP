@@ -191,9 +191,9 @@ export default class App extends Component {
                 <View style={styles.labelPswWrapper}>
                     <Text style={styles.labelPsw}>Пароль</Text>
 
-                    <TouchableOpacity style={{}} onPress={() => this.ConfirmEmail()}>
-                        <Text style={{color: '#0078D2', fontSize: 14}}>Забыли пароль?</Text>
-                    </TouchableOpacity>
+                    {/*<TouchableOpacity style={{}} onPress={() => this.ConfirmEmail()}>*/}
+                    {/*    <Text style={{color: '#0078D2', fontSize: 14}}>Забыли пароль?</Text>*/}
+                    {/*</TouchableOpacity>*/}
                 </View>
                 <TextInput
                     value={this.state.password}

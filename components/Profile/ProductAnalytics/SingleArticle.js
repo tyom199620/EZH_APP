@@ -108,7 +108,6 @@ export default class SingleArticle extends Component {
                 "content-type": "application/json",
             }).then(
                 (response) => {
-
                     this.setState({
                         articleList: response.data
                     })
@@ -299,8 +298,11 @@ export default class SingleArticle extends Component {
 
                                 <View style={[styles.analyticItemTopRightInfoArticleWrapper, {marginBottom: 20}]}>
 
-                                    <Text style={styles.analyticItemTopRightInfoArticle}>Артикул:</Text><Text
-                                    style={styles.analyticItemTopRightInfoArticle}> {this.props.article.article}</Text>
+                                    <Text style={styles.analyticItemTopRightInfoArticle}>Артикул:</Text>
+
+                                    <Text style={styles.analyticItemTopRightInfoArticle} >
+                                        {this.props.article.article}
+                                    </Text>
                                     <TouchableOpacity style={{marginLeft: 9}} onPress={() => {
                                         this.props.article.type == 'ozon_FBO' ? Linking.openURL('https://www.ozon.ru/product/' + this.props.article.MissedNmid + '/') : Linking.openURL('https://www.wildberries.ru/catalog/' + this.props.article.MissedNmid + '/detail.aspx?targetUrl=ST')
                                     }}>
@@ -646,8 +648,8 @@ export default class SingleArticle extends Component {
                                     style={{
                                         fontWeight: 'bold',
                                         width: '45%'
-                                    }}>{parseInt(this.state.articleList.buyout_price)} ₽
-                                    / {this.state.articleList.buyout} шт</Text>
+                                    }}>{parseInt(this.state.articleList.profit)} ₽
+                                    / {this.state.articleList.sales_count} шт</Text>
                                 <View style={{width: '20%', flexDirection: 'row'}}>
                                     {/*<Text style={{width: '20%', marginRight: 5, marginTop: 5}}>*/}
                                     {/*    <Image*/}

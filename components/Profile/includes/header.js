@@ -38,7 +38,7 @@ export default class App extends Component {
             user_email: null,
             shop_list: [],
             buttonActive: false,
-            isDemo: {}
+            isDemo: this.props.isDemo
         };
 
     }
@@ -165,7 +165,6 @@ export default class App extends Component {
 
 
     render() {
-
         return (
             <View style={{width: '100%', marginTop: (Platform.OS === 'ios') ? 28 : 0}}>
                 <Modal
@@ -221,8 +220,8 @@ export default class App extends Component {
                                 </TouchableOpacity>
 
 
-                                {this.state.shop_list.length === 0 || this.state.isDemo === true ?
-                                    <TouchableOpacity disabled={this.state.isDemo} style={{
+                                {this.state.shop_list.length === 0 || this.props.isDemo === true ?
+                                    <TouchableOpacity disabled={this.props.isDemo} style={{
                                         width: '100%',
                                         backgroundColor: 'white',
                                         paddingHorizontal: 23,

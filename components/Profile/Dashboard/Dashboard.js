@@ -232,6 +232,7 @@ export default class App extends Component {
                 <HeaderComponent
                     user_info={{'name': this.state.user_name, 'email': this.state.user_email}}
                     navigation={this.props.navigation}
+                    isDemo={this.state.isDemo}
                 />
 
 
@@ -267,6 +268,7 @@ export default class App extends Component {
                             navigationProps={this.props.navigation}
                             sortData={this.state.sortOfDate}
                             shop_id={this.state.shop_id}
+                            isDemo={this.state.isDemo}
                         />
                     </View>}
                     <View style={{height: 20, width: '100%'}}></View>
