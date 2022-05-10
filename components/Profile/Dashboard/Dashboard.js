@@ -48,7 +48,7 @@ export default class App extends Component {
             shop_list: [''],
 
             tariffInfo: [],
-            sortOfDate: 'yesterday',
+            sortOfDate: 1,
             loading: true,
 
             isDemo: '',
